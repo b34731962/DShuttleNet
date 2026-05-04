@@ -25,27 +25,12 @@ ANGLE_BIN_LABELS = [0, 1, 2, 3, 4]
 ANGLE_ERROR_BIN = 5
 ANGLE_ERROR_CODE = -404
 
-# ball type classification map
-CLASSIFICATION_MAP = {
-    '擋小球': 'net shot', '勾球': 'net shot', '放小球': 'net shot', '小平球': 'net shot', '網前小球': 'net shot',
-    '推球': 'push', '撲球': 'push', '推撲球': 'push',
-    '挑球': 'lift', '防守回挑': 'lift',
-    '防守回抽': 'drive', '平球': 'drive', '後場抽平球': 'drive',
-    '切球': 'drop', '過度切球': 'drop',
-    '殺球': 'smash',
-    '長球': 'clear',
-    '發長球': 'long serve', '發短球': 'short serve'
-}
-
 # --- 3. ball type classification ---
 
-def map_ball_type_to_group(df: pd.DataFrame, classification_map: Dict[str, str]) -> pd.DataFrame:
-    df['ball_type'] = df['ball_type'].map(classification_map)
+def map_ball_type_to_group(df: pd.DataFrame) -> pd.DataFrame:
     
-    # 處理未映射的球種 (即 NaN)
     df['ball_type'] = df['ball_type'].fillna('uncategorized')
 
-    print("\n--- 球種映射完成 ---")
     print(f"最終分類結果:\n{df['ball_type'].value_counts()}")
     return df
 
@@ -295,7 +280,7 @@ def clean_return_height(df: pd.DataFrame) -> pd.DataFrame:
     
     return df_clean
 
-def caculate_analysis_col(df_analysis,selected_type, shot_to_end):
+def caculate_analysis_col(df_analysis, selected_type, shot_to_end):
     cols_to_numeric = ['player', 'score_team', 'shot_num', 'shot_count', 'match_id', 'A', 'B', 'C', 'D', 'set_win']
     for col in cols_to_numeric:
         df_analysis[col] = pd.to_numeric(df_analysis[col], errors='coerce')
@@ -381,10 +366,10 @@ def calculate_voronoi_vectorized(df, weight=True, decay_rate=0.021):
     down_grid_x = xx_down.ravel()
     down_grid_y = yy_down.ravel()
     
-    df['match_Winner_AAI'] = np.nan
-    df['match_Loser_AAI'] = np.nan
+    df['match_Winner_TLAI'] = np.nan
+    df['match_Loser_TLAI'] = np.nan
 
-    def calc_aai_batch(x1, y1, x2, y2, hx, hy, grid_x, grid_y):
+    def calc_tlai_batch(x1, y1, x2, y2, hx, hy, grid_x, grid_y):
         dist1 = (x1[:, None] - grid_x)**2 + (y1[:, None] - grid_y)**2
         dist2 = (x2[:, None] - grid_x)**2 + (y2[:, None] - grid_y)**2
         
@@ -403,9 +388,9 @@ def calculate_voronoi_vectorized(df, weight=True, decay_rate=0.021):
         total_load = load_1 + load_2
         total_load_safe = np.where(total_load == 0, 1, total_load)
         
-        aai = np.abs(load_1 - load_2) / total_load_safe
+        tlai = np.abs(load_1 - load_2) / total_load_safe
         
-        return np.where(total_load == 0, np.nan, aai)
+        return np.where(total_load == 0, np.nan, tlai)
 
     ab_is_up = (df['player_A_y'] > 67).fillna(False)
     ab_is_down = (~ab_is_up) & df['player_A_y'].notna()
@@ -416,7 +401,7 @@ def calculate_voronoi_vectorized(df, weight=True, decay_rate=0.021):
     mask_1 = ab_hits & ab_is_up
     if mask_1.any():
         df_sub = df[mask_1]
-        df.loc[mask_1, 'match_Loser_AAI'] = calc_aai_batch(
+        df.loc[mask_1, 'match_Loser_TLAI'] = calc_tlai_batch(
             df_sub['player_C_x'].values, df_sub['player_C_y'].values,
             df_sub['player_D_x'].values, df_sub['player_D_y'].values,
             df_sub['hit_x'].values, df_sub['hit_y'].values,  
@@ -426,7 +411,7 @@ def calculate_voronoi_vectorized(df, weight=True, decay_rate=0.021):
     mask_2 = ab_hits & ab_is_down
     if mask_2.any():
         df_sub = df[mask_2]
-        df.loc[mask_2, 'match_Loser_AAI'] = calc_aai_batch(
+        df.loc[mask_2, 'match_Loser_TLAI'] = calc_tlai_batch(
             df_sub['player_C_x'].values, df_sub['player_C_y'].values,
             df_sub['player_D_x'].values, df_sub['player_D_y'].values,
             df_sub['hit_x'].values, df_sub['hit_y'].values,
@@ -436,7 +421,7 @@ def calculate_voronoi_vectorized(df, weight=True, decay_rate=0.021):
     mask_3 = cd_hits & ab_is_up
     if mask_3.any():
         df_sub = df[mask_3]
-        df.loc[mask_3, 'match_Winner_AAI'] = calc_aai_batch(
+        df.loc[mask_3, 'match_Winner_TLAI'] = calc_tlai_batch(
             df_sub['player_A_x'].values, df_sub['player_A_y'].values,
             df_sub['player_B_x'].values, df_sub['player_B_y'].values,
             df_sub['hit_x'].values, df_sub['hit_y'].values, 
@@ -446,7 +431,7 @@ def calculate_voronoi_vectorized(df, weight=True, decay_rate=0.021):
     mask_4 = cd_hits & ab_is_down
     if mask_4.any():
         df_sub = df[mask_4]
-        df.loc[mask_4, 'match_Winner_AAI'] = calc_aai_batch(
+        df.loc[mask_4, 'match_Winner_TLAI'] = calc_tlai_batch(
             df_sub['player_A_x'].values, df_sub['player_A_y'].values,
             df_sub['player_B_x'].values, df_sub['player_B_y'].values,
             df_sub['hit_x'].values, df_sub['hit_y'].values,
@@ -455,7 +440,7 @@ def calculate_voronoi_vectorized(df, weight=True, decay_rate=0.021):
 
     return df
 
-def main_data_pipeline(df):
+def main_data_pipeline(df, CCE_Radius=9):
     """
     ADD feature and do some change for ball type
     """
@@ -465,7 +450,7 @@ def main_data_pipeline(df):
     df = clean_return_height(df)
 
     # 2. balltype classification
-    df = map_ball_type_to_group(df, CLASSIFICATION_MAP)
+    df = map_ball_type_to_group(df)
     
     # 3. grid the hitting zone
     df = process_court_zones(df)
@@ -475,8 +460,8 @@ def main_data_pipeline(df):
 
     # 5. add center coverage and formation
     print("\n--- add center coverage and formation ---")
-    df = add_tactical_columns(df)
-    df = caculate_analysis_col(df, selected_type=['對手落地致勝', '未過網', '掛網', '出界'], shot_to_end=[1,2,3])
+    df = add_tactical_columns(df, CCE_Radius=CCE_Radius)
+    df = caculate_analysis_col(df, selected_type=['Failed Return', 'Opp Grounded within Boundaries', 'Net Fault', 'Failed Return'], shot_to_end=[1,2,3])
     df = calculate_voronoi_vectorized(df, weight=True, decay_rate=0.021)
 
     # 6. determine the direction of ball height
@@ -493,9 +478,10 @@ def add_tactical_columns(df_in,
                          y_diff_threshold=10, 
                          net_y=67,
                          cover_type='circle', 
-                         formation_method='angle'): 
+                         formation_method='angle',
+                         CCE_Radius=9): 
     SQUARE_SIZE = 20
-    RADIUS = 15  
+    RADIUS = CCE_Radius
     MID_X = 30.5
     DISTANCE_TO_CENTER = 12.5
     MID_Y_BOTTOM = 47 - DISTANCE_TO_CENTER 
@@ -558,6 +544,8 @@ def add_tactical_columns(df_in,
     D_in_top = check_in_zone('player_D_x', 'player_D_y', MID_Y_TOP, MID_Y_TOP_RANGE)
     df['match_Loser_mid_cover'] = np.where(team_CD_is_bottom, (C_in_bottom | D_in_bottom), (C_in_top | D_in_top))
     
+
+
     if 'rally_id' in df.columns and 'shot_id' in df.columns:
         df['shot_count'] = df.groupby('rally_id')['shot_id'].transform('count')
     

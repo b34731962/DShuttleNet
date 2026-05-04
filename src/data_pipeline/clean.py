@@ -33,15 +33,13 @@ def remove_outlier_rallies(df_main: pd.DataFrame, df_outliers: pd.DataFrame) -> 
 from typing import Dict, List
 
 def clean_coordinate_outliers(df: pd.DataFrame, 
-                              classification_map: Dict[str, str] = None, 
                               x_min: int = -10, x_max: int = 71, 
-                              y_min: int = -10, y_max: int = 144,
-                              serve_types: List[str] = ['發長球', '發短球']) -> tuple[pd.DataFrame, pd.DataFrame]:
+                              y_min: int = -10, y_max: int = 144) -> tuple[pd.DataFrame, pd.DataFrame]:
     """
     Data clean:
     ball_type '未分類'，
     hit_height == 0 。
-    error case (Hitting_Zone == '-1', Angle_Bin == 5)。
+    error case (Hitting_Zone == '-1', Angle_Bin == 5）。
     """
     df_clean = df.copy()
     initial_rows = len(df_clean)
