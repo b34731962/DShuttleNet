@@ -121,7 +121,7 @@ def get_court_zone(row: pd.Series) -> str:
             elif x_pos == 2: zone_number = 9
             elif x_pos == 3: zone_number = 3
             
-    else: # 上半場 (Y >= 67)
+    else
         if y_zone_type == 'Forecourt':
             if x_pos == 1: zone_number = 1
             elif x_pos == 2: zone_number = 7
