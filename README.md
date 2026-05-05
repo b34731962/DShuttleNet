@@ -67,6 +67,6 @@ pip install -r requirements.txt
 
 ## Acknowledgments
 
-This project analyzes badminton match data to provide tactical insights for players, coaches, and match analysts.
+This project analyzes badminton match data to provide tactical insights for players, coaches, and match analysis.
 
 ---
