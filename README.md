@@ -74,20 +74,6 @@ pip install -r requirements.txt
 | seaborn | 0.13.2 | Statistical data visualization |
 | scipy | 1.17.1 | Scientific computing (KDE, statistics) |
 
-## Data Format
-
-### Engineered Features (merge_data.csv)
-- Hitting_Zone (1-9, 10-16 for out-of-bounds)
-- Angle_Bin (0-5, where 5 = error)
-- ball_type (mapped categories)
-- Formation (Attack/Defense/Transition)
-- Defender response metrics
-
-### Coordinate System
-- Court dimensions: 61m × 134m (badminton doubles court)
-- Player tracking with (X, Y) coordinates
-- 4-player tracking (A, B, C, D) per shot
-
 ## License
 
 [Add appropriate license information]
