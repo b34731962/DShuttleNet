@@ -36,9 +36,6 @@ DShuttleNet/
 │       └── data_utils.py        # Data filtering and coordinate processing
 │
 └── img/                          # Generated visualizations
-    ├── 3dplot/                  # 3D scatter plots of shot analysis
-    ├── angle_grouped/           # Bar charts of shot angles
-    └── Coordination Analysis/   # Formation and positioning heatmaps
 ```
 
 ## Usage
