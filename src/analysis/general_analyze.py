@@ -16,19 +16,6 @@ def plot_badminton_shot_analysis(
     save_dir_3d='./img/3dplot',
     save_dir_bar='./img/angle_grouped'
 ):
-    """
-    Analyze badminton data and plot 3D scatter plot and grouped bar chart
-    
-    Args:
-        df_raw (pd.DataFrame): 包含原始數據的 DataFrame
-        z_axis_max_limit (int, optional): 3D圖 Z軸的最大值。若未提供，將依據數據自動調整。
-        column_map (dict, optional): 欄位對應表
-        zone_map (dict, optional): 場區對應表
-        shottype_map (dict, optional): 球種對應表
-        save_dir_3d (str): 3D 圖表存檔目錄
-        save_dir_bar (str): 柱狀圖存檔目錄
-    """
-    
     if column_map is None:
         column_map = {
             'Angle': 'Partner_Angle',
@@ -48,7 +35,7 @@ def plot_badminton_shot_analysis(
 
     if shottype_map is None:
         shottype_map = {
-            'smahs': 'Offensive Shot', 
+            'smash': 'Offensive Shot', 
             'push': 'Offensive Shot', 
             'drop': 'Offensive Shot',
             'net shot': 'Defensive Shot', 
@@ -58,10 +45,8 @@ def plot_badminton_shot_analysis(
         }
 
     Y_CATEGORIES = ['Forecourt', 'Midcourt', 'Backcourt']
-    # COLOR_CATEGORIES = ['攻擊性擊球', '防守性擊球']
     COLOR_CATEGORIES = ['Offensive Shot', 'Defensive Shot']
     y_mapping = {cat: i for i, cat in enumerate(Y_CATEGORIES)}
-    # colors_list = {'攻擊性擊球': 'red', '防守性擊球': 'blue'} 
     colors_list = {'Offensive Shot': 'red', 'Defensive Shot': 'blue'} 
 
     try:
@@ -182,21 +167,18 @@ def plot_badminton_shot_analysis(
     ax_bar.grid(axis='y', linestyle='--', alpha=0.7)
     ax_bar.set_xticklabels(bin_labels, rotation=45, ha='right', fontsize=WORD_SIZE_S)
     ax_bar.tick_params(axis='y', labelsize=WORD_SIZE_S)
-    # 1. 調整 Legend 位置：貼齊上方邊界
     ax_bar.legend(loc='lower center', bbox_to_anchor=(0.5, 1.02), ncol=3, fontsize=WORD_SIZE_S)
     
     ax_bar.set_ylim(0, 14000)
     
-    # 2. 刪除 plt.tight_layout()，改用強制調整邊距 (留 15% 空間給上方的 Legend)
     plt.subplots_adjust(top=0.85, bottom=0.2, left=0.1, right=0.95)
 
     save_path_bar = os.path.join(save_dir_bar, 'grouped_angle_ball_type_nolable.png')
-    # plt.savefig(save_path_bar, bbox_inches='tight')
     plt.savefig(save_path_bar, bbox_inches='tight', dpi=300)
     plt.show()
 
 
-def plot_badminton_up_down_analysis(
+def plot_badminton_VSA_analysis(
     df_raw, 
     z_axis_max_limit=None, 
     column_map=None,
@@ -206,21 +188,7 @@ def plot_badminton_up_down_analysis(
     save_dir_3d='./img/3dplot',
     save_dir_bar='./img/angle_grouped'
 ):
-    """
-    Analyze badminton data and plot 3D scatter plot and grouped bar chart
     
-    Args:
-        df_raw (pd.DataFrame): 包含原始數據的 DataFrame
-        z_axis_max_limit (int, optional): 3D圖 Z軸的最大值。若未提供，將依數據自動調整。
-        column_map (dict, optional): 欄位對應表
-        zone_map (dict, optional): 場區對應表
-        shottype_map (dict, optional): 球種對應表
-        filter_ball_types (list, optional): 要過濾掉的球種清單
-        save_dir_3d (str): 3D 圖表存檔目錄
-        save_dir_bar (str): 柱狀圖存檔目錄
-    """
-    
-    # --- 0. 預設參數設定 ---
     if column_map is None:
         column_map = {
             'Angle': 'Partner_Angle',
@@ -243,13 +211,12 @@ def plot_badminton_up_down_analysis(
         }
 
     if shottype_map is None:
+        # VSA
         shottype_map = {
-            1: 'Upward Shot', # 1 防守 (下到上)
-            2: 'Downward Shot', # 2 進攻 (上到下)
-            0: 'Flat Shot'  # 0 其他
-            # 1: '防守球', # 1 防守 (下到上)
-            # 2: '進攻球', # 2 進攻 (上到下)
-            # 0: '其他球'  # 0 其他
+            1: 'Upward Shot',
+            2: 'Downward Shot', 
+            0: 'Flat Shot'  
+
         }
 
     Y_CATEGORIES = ['Forecourt', 'Midcourt', 'Backcourt']
@@ -257,7 +224,6 @@ def plot_badminton_up_down_analysis(
     y_mapping = {cat: i for i, cat in enumerate(Y_CATEGORIES)}
     colors_list = {'Downward Shot': 'red', 'Upward Shot': 'blue', 'Flat Shot': 'green'} 
 
-    # --- 1. 設定中文字體 ---
     try:
         font_path = fm.findfont(fm.FontProperties(family='Microsoft JhengHei'))
         font_prop = fm.FontProperties(fname=font_path)
@@ -267,7 +233,6 @@ def plot_badminton_up_down_analysis(
     plt.rcParams['axes.unicode_minus'] = False 
 
 
-    # --- 2. 數據清洗與轉換 ---
     try:
         df = pd.DataFrame()
         df['Angle'] = df_raw[column_map['Angle']]
@@ -278,7 +243,6 @@ def plot_badminton_up_down_analysis(
         
         initial_count = len(df)
         
-        # 核心過濾邏輯
         df = df[df['Angle'] != -404.0]
         df = df[~df['BallType'].isin(filter_ball_types)]
         df.dropna(subset=['Angle', 'Zone', 'ShotType', 'BallType'], inplace=True)
@@ -299,7 +263,6 @@ def plot_badminton_up_down_analysis(
         return
 
 
-    # --- 3. 數據處理 (Aggregation) ---
     df_agg = df.groupby(['Angle', 'Zone', 'ShotType']).agg(
         Count=('Count', 'sum')
     ).reset_index()
@@ -384,15 +347,12 @@ def plot_badminton_up_down_analysis(
     ax_bar.grid(axis='y', linestyle='--', alpha=0.7)
     ax_bar.set_xticklabels(bin_labels, rotation=45, ha='right', fontsize=WORD_SIZE_S)
     ax_bar.tick_params(axis='y', labelsize=WORD_SIZE_S)
-    # 1. 調整 Legend 位置：貼齊上方邊界
     ax_bar.legend(loc='lower center', bbox_to_anchor=(0.5, 1.02), ncol=3, fontsize=WORD_SIZE_S)
     
     ax_bar.set_ylim(0, 14000)
     
-    # 2. 刪除 plt.tight_layout()，改用強制調整邊距 (留 15% 空間給上方的 Legend)
     plt.subplots_adjust(top=0.85, bottom=0.2, left=0.1, right=0.95)
     save_path_bar = os.path.join(save_dir_bar, 'grouped_angle_up_down_nolable.png')
-    # plt.savefig(save_path_bar, bbox_inches='tight')
     plt.savefig(save_path_bar,bbox_inches='tight', dpi=300)
     plt.show()
 
@@ -403,45 +363,24 @@ def analyze_badminton_rally_stats(
     rally_col='rally_id',
     shot_col='shot_num'
 ):
-    """
-    Analyze badminton rally/shot statistics by event.
     
-    Args:
-        df_raw (pd.DataFrame): 包含原始數據的 DataFrame
-        event_mapping (dict, optional): 賽事項目對應表。預設為 {1: "男雙", 2: "女雙", 3: "混雙"}
-        event_col (str): 賽事項目欄位名稱，預設為 'event'
-        rally_col (str): 回合 ID 欄位名稱，預設為 'rally_id'
-        shot_col (str): 擊球編號/拍數欄位名稱，預設為 'shot_num'
-        
-    Return:
-        tuple: (summary_df, rally_lengths_df)
-            - summary_df: 各項目統計摘要
-            - rally_lengths_df: 每個回合的拍數明細
-    """
-    
-    # 0. 預設參數設定
     if event_mapping is None:
-        # event_mapping = {1: "男雙", 2: "女雙", 3: "混雙"}
         event_mapping = {1: "MD", 2: "WD", 3: "XD"}
         
-    # 檢查必備欄位是否存在
     required_cols = [event_col, rally_col, shot_col]
     missing_cols = [col for col in required_cols if col not in df_raw.columns]
     if missing_cols:
         print(f"Error: Required columns not found in DataFrame: {missing_cols}")
         return None, None
 
-    # 1. 複製資料避免改動原始 df，並定義項目對應
     df = df_raw.copy()
     df['event_name'] = df[event_col].map(event_mapping)
     
     # 處理未對應到的值（可選）
     df['event_name'] = df['event_name'].fillna('未知項目')
 
-    # 2. 核心邏輯：計算「每一個 Rally」分別有多少拍
     rally_lengths = df.groupby(['event_name', rally_col])[shot_col].nunique().reset_index(name='shots_in_this_rally')
 
-    # 3. 針對「回合長度」進行統計
     summary = rally_lengths.groupby('event_name')['shots_in_this_rally'].agg(
         total_rallies='count',
         total_shots='sum',
@@ -450,7 +389,6 @@ def analyze_badminton_rally_stats(
         min_shots='min' 
     ).reset_index()
 
-    # 4. 輸出結果與全體統計
     print("=== Badminton Rally/Shot Statistics ===")
     print(summary.round(2).to_string(index=False))
 
@@ -478,7 +416,6 @@ def analyze_badminton_shot_distribution(
     shot_type_col='ball_type'
 ):
     
-    # 0. 預設參數設定
     if event_mapping is None:
         event_mapping = {1: 'MD', 2: 'WD', 3: 'XD'}
         
@@ -491,18 +428,15 @@ def analyze_badminton_shot_distribution(
     if cols_order is None:
         cols_order = ['MD', 'WD', 'XD', 'Total']
 
-    # 檢查必備欄位是否存在
     required_cols = [event_col, shot_type_col]
     missing_cols = [col for col in required_cols if col not in df_raw.columns]
     if missing_cols:
         print(f"Error: Required columns not found in DataFrame: {missing_cols}")
         return None
 
-    # 1. 複製資料並定義名稱
     df = df_raw.copy()
     df['event_name'] = df[event_col].map(event_mapping)
 
-    # 2. 建立基礎數據表 (Count)
     df_count = pd.crosstab(
         df[shot_type_col], 
         df['event_name'], 
@@ -510,32 +444,25 @@ def analyze_badminton_shot_distribution(
         margins_name='Total' 
     )
 
-    # 3. 確保欄位順序 (動態過濾掉資料中沒有的項目)
     available_cols = [c for c in cols_order if c in df_count.columns]
     df_count = df_count[available_cols]
 
-    # 4. 計算百分比表 (Percentage)
     df_pct = df_count.div(df_count.loc['Total'], axis=1) * 100
 
-    # 5. 合併「數量」與「百分比」格式
     df_formatted = pd.DataFrame()
     for col in df_count.columns:
         df_formatted[col] = [f"{int(c)} ({p:.2f}%)" for c, p in zip(df_count[col], df_pct[col])]
 
-    # 補回索引 (球種名稱)
     df_formatted.index = df_count.index
 
-    # 6. 依照指定球種順序排列 (Rows)
     df_final = df_formatted.reindex(ball_order).fillna("0 (0.00%)")
 
-    # 7. 處理最下方的「總共球數」列
     if 'Total' in df_count.index:
         total_row_counts = df_count.loc['Total']
         total_row_display = [f"{int(val)}" for val in total_row_counts] 
         df_total_row = pd.DataFrame([total_row_display], columns=df_count.columns, index=['Total'])
         df_final = pd.concat([df_final, df_total_row])
 
-    # Display translation to English
     translation_map = {
         'drop': 'Drop',
         'long serve': 'Long Serve',

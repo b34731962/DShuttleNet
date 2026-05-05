@@ -27,11 +27,11 @@ ANGLE_ERROR_CODE = -404
 
 # --- 3. ball type classification ---
 
-def map_ball_type_to_group(df: pd.DataFrame) -> pd.DataFrame:
+def fix_ball_type_nan(df: pd.DataFrame) -> pd.DataFrame:
     
     df['ball_type'] = df['ball_type'].fillna('uncategorized')
 
-    print(f"最終分類結果:\n{df['ball_type'].value_counts()}")
+    print(f"Ball Type Distribution:\n{df['ball_type'].value_counts()}")
     return df
 
 # --- 4. Hitting Zone ---
@@ -450,7 +450,7 @@ def main_data_pipeline(df, CCE_Radius=9):
     df = clean_return_height(df)
 
     # 2. balltype classification
-    df = map_ball_type_to_group(df)
+    df = fix_ball_type_nan(df)
     
     # 3. grid the hitting zone
     df = process_court_zones(df)

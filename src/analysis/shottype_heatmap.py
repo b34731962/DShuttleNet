@@ -15,11 +15,6 @@ def normalize_halfcourt(df):
 
     return df
 def plot_angle_relation_scatter(df, title="Hitter vs Defender Positioning Angles",filename="img/angle/smash.png"):
-    """
-    繪製攻擊方與防守方站位角度的散佈圖
-    x: Hitter Angle (0-90)
-    y: Defender Angle (0-90)
-    """
     plot_df = df.dropna(subset=['hitter_angle', 'defender_angle'])
     
     plt.figure(figsize=(8, 8))
@@ -28,19 +23,12 @@ def plot_angle_relation_scatter(df, title="Hitter vs Defender Positioning Angles
         data=plot_df, 
         x='hitter_angle', 
         y='defender_angle', 
-        
         fill=True, 
-        
         cmap='Reds', 
-        
         bw_adjust=0.6, 
-        
-        thresh=0.01, 
-        
+        thresh=0.01,
         levels=20, 
-        
         alpha=0.8, 
-        
         zorder=0
     )
 

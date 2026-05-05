@@ -37,14 +37,14 @@ def clean_coordinate_outliers(df: pd.DataFrame,
                               y_min: int = -10, y_max: int = 144) -> tuple[pd.DataFrame, pd.DataFrame]:
     """
     Data clean:
-    ball_type '未分類'，
+    ball_type 'uncategorized'，
     hit_height == 0 。
     error case (Hitting_Zone == '-1', Angle_Bin == 5）。
     """
     df_clean = df.copy()
     initial_rows = len(df_clean)
 
-    condition_ball_type = (df_clean['ball_type'] == '未分類')
+    condition_ball_type = (df_clean['ball_type'] == 'uncategorized')
 
     def is_outlier_x(x): return (x < x_min) | (x > x_max)
     def is_outlier_y(y): return (y < y_min) | (y > y_max)
