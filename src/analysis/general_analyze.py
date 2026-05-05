@@ -376,8 +376,7 @@ def analyze_badminton_rally_stats(
     df = df_raw.copy()
     df['event_name'] = df[event_col].map(event_mapping)
     
-    # 處理未對應到的值（可選）
-    df['event_name'] = df['event_name'].fillna('未知項目')
+    df['event_name'] = df['event_name'].fillna('Unknown Event')
 
     rally_lengths = df.groupby(['event_name', rally_col])[shot_col].nunique().reset_index(name='shots_in_this_rally')
 
