@@ -113,11 +113,9 @@ def global_ccei_analysis(df, match_id=None,
         height = bar.get_height()
         status = [True, False][i]
         
-        # 1. 成功率
         ax.text(bar.get_x() + bar.get_width()/2, height + 1, 
                 f'{height:.1f}%', ha='center', va='bottom', fontsize=12, weight='bold')
         
-        # 2. 成功數/總數
         fail = int(stats_reaction.loc[status, 'total_failures'])
         att = int(stats_reaction.loc[status, 'total_attempts'])
         success = att - fail
