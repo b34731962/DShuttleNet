@@ -29,8 +29,8 @@ DShuttleNet/
 │   │   ├── ccei_analysis.py     # Court Coverage & Formation analysis
 │   │   ├── shottype_heatmap.py  # Position density heatmaps (KDE)
 │   │   ├── shottype_pos.py      # Court occupancy visualization
-│   │   ├── tlai_analysis.py     # Threat Level Awareness Index
-│   │   └── old_general_analyze_copy.py  # Legacy analysis
+│   │   └── tlai_analysis.py     # Threat Level Awareness Index
+│   │   
 │   │
 │   └── utils/                   # Utility functions
 │       └── data_utils.py        # Data filtering and coordinate processing
