@@ -64,16 +64,6 @@ pip install -r requirements.txt
    - Run all analysis modules
    - Output visualizations to `img/`
 
-## Dependencies
-
-| Package | Version | Purpose |
-|---------|---------|---------|
-| pandas | 3.0.2 | Data manipulation and analysis |
-| numpy | 2.4.4 | Numerical computing |
-| matplotlib | 3.10.8 | 2D/3D plotting and visualization |
-| seaborn | 0.13.2 | Statistical data visualization |
-| scipy | 1.17.1 | Scientific computing (KDE, statistics) |
-
 ## License
 
 [Add appropriate license information]
